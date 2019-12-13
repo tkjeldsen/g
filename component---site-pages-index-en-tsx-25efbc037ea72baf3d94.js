@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[7,8],{jAeI:function(e,t,n){"use strict";n.r(t);var a=n("2w0b"),u=n.n(a),r=n("8JaU"),c=n("o7jn");t.default=function(){Object(c.b)().t;return u.a.createElement(u.a.Fragment,null,u.a.createElement(r.a,{title:"蚂蚁数据可视化",lang:"zh"}))}},ug36:function(e,t,n){"use strict";n.r(t);var a=n("jAeI");t.default=a.default}}]);
-//# sourceMappingURL=component---site-pages-index-en-tsx-25efbc037ea72baf3d94.js.map
