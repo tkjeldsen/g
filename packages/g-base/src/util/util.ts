@@ -6,6 +6,12 @@ export function removeFromArray(arr: any[], obj: any) {
   }
 }
 
+export function removeFromArrayByIndex(arr: any[], index: number) {
+  if (index >= 0) {
+    arr.splice(index, 1);
+  }
+}
+
 export const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 export { isNil, isFunction, isString, isObject, isArray, mix, each, upperFirst } from '@antv/util';
 

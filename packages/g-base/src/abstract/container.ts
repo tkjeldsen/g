@@ -2,7 +2,15 @@ import { IContainer, IShape, IGroup, IElement, ICanvas } from '../interfaces';
 import { BBox, ElementFilterFn } from '../types';
 import Timeline from '../animate/timeline';
 import Element from './element';
-import { isFunction, isObject, each, removeFromArray, upperFirst, isAllowCapture } from '../util/util';
+import {
+  isFunction,
+  isObject,
+  each,
+  removeFromArray,
+  upperFirst,
+  isAllowCapture,
+  removeFromArrayByIndex,
+} from '../util/util';
 
 const SHAPE_MAP = {};
 const INDEX = '_INDEX';
@@ -288,6 +296,7 @@ abstract class Container extends Element implements IContainer {
       removeChild(preParent, element, false);
     }
     element.set('parent', this);
+    element.set('childIndex', children ? children.length : 0);
     if (canvas) {
       setCanvas(element, canvas);
     }
@@ -324,6 +333,9 @@ abstract class Container extends Element implements IContainer {
         return obj1.get('zIndex') - obj2.get('zIndex');
       })
     );
+    children.forEach((child, index) => {
+      child.set('childIndex', index);
+    });
     this.onCanvasChange('sort');
   }
 
@@ -400,8 +412,18 @@ abstract class Container extends Element implements IContainer {
    * @param {boolean} destroy 是否销毁子元素，默认为 true
    */
   removeChild(element: IElement, destroy = true) {
-    if (this.contain(element)) {
-      element.remove(destroy);
+    if (element.getParent() === this) {
+      const childIndex = element.get('childIndex');
+      removeFromArrayByIndex(this.getChildren(), childIndex);
+      this.getChildren().forEach((child, index) => {
+        child.set('childIndex', index);
+      });
+
+      element.set('parent', null);
+      element.set('childIndex', -1);
+      if (destroy) {
+        element.destroy();
+      }
     }
   }
 

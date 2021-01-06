@@ -2,7 +2,7 @@ import { each, isEqual, isFunction, isNumber, isObject, isArray, noop, mix, uppe
 import { ext } from '@antv/matrix-util';
 import { IElement, IShape, IGroup, ICanvas, ICtor } from '../interfaces';
 import { ClipCfg, ChangeType, OnFrame, ShapeAttrs, AnimateCfg, Animation, BBox, ShapeBase } from '../types';
-import { removeFromArray, isParent } from '../util/util';
+import { isParent } from '../util/util';
 import { multiplyMatrix, multiplyVec2, invert } from '../util/matrix';
 import Base from './base';
 import GraphEvent from '../event/graph-event';
@@ -254,6 +254,9 @@ abstract class Element extends Base implements IElement {
     const index = children.indexOf(this);
     children.splice(index, 1);
     children.push(this);
+    children.forEach((child, index) => {
+      child.set('childIndex', index);
+    });
     this.onCanvasChange('zIndex');
   }
 
@@ -267,13 +270,16 @@ abstract class Element extends Base implements IElement {
     const index = children.indexOf(this);
     children.splice(index, 1);
     children.unshift(this);
+    children.forEach((child, index) => {
+      child.set('childIndex', index);
+    });
     this.onCanvasChange('zIndex');
   }
 
   remove(destroy = true) {
     const parent = this.getParent();
     if (parent) {
-      removeFromArray(parent.getChildren(), this);
+      parent.removeChild(this, false);
       if (!parent.get('clearing')) {
         // 如果父元素正在清理，当前元素不触发 remove
         this.onCanvasChange('remove');

@@ -222,19 +222,15 @@ describe('test with matrix', () => {
 
 describe('test group member function', () => {
   const group = new Group({});
-  const subGroup = new Group({
-    parent: group,
-  });
-  subGroup.set('children', [
-    new MyShape({ id: '04', name: 'shape', text: '04' }),
-    new MyShape({ id: 'test', name: 'shape', text: '02' }),
-  ]);
-  group.set('children', [
-    new MyShape({ id: '01', name: 'shape', text: '01', parent: group }),
-    new MyShape({ id: '02', name: 'shape', text: '02', parent: group }),
-    subGroup,
-    new MyShape({ id: '03', name: 'shape', text: '03', parent: group }),
-  ]);
+  const subGroup = new Group({});
+
+  subGroup.add(new MyShape({ id: '04', name: 'shape', text: '04' }));
+  subGroup.add(new MyShape({ id: 'test', name: 'shape', text: '02' }));
+
+  group.add(new MyShape({ id: '01', name: 'shape', text: '01', parent: group }));
+  group.add(new MyShape({ id: '02', name: 'shape', text: '02', parent: group }));
+  group.add(subGroup);
+  group.add(new MyShape({ id: '03', name: 'shape', text: '03', parent: group }));
 
   it('getFirst', () => {
     expect(group.getFirst().get('id')).eqls('01');

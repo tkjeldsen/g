@@ -8,6 +8,8 @@ const dom = document.createElement('div');
 document.body.appendChild(dom);
 dom.id = 'c1';
 
+class MyGroup extends Group {}
+
 class MyElement extends Element {
   getBBox() {
     const { x, y, width, height } = this.attrs;
@@ -22,7 +24,7 @@ class MyElement extends Element {
     return MyElement;
   }
   getGroupBase() {
-    return Group;
+    return MyGroup;
   }
 }
 
@@ -49,7 +51,7 @@ class MyCanvas extends Canvas {
     return MyElement;
   }
   getGroupBase() {
-    return Group;
+    return MyGroup;
   }
 }
 
@@ -59,15 +61,7 @@ describe('test element', () => {
     width: 400,
     height: 400,
   });
-  const group = {
-    get(name) {
-      return this[name];
-    },
-    getChildren() {
-      return this.children;
-    },
-    children: [],
-  };
+  const group = new MyGroup({});
   const element = new MyElement({
     attrs: {
       x: 0,
@@ -109,33 +103,32 @@ describe('test element', () => {
   });
 
   it('to front', () => {
-    group.children.push(element);
-    element.set('parent', group);
+    group.add(element);
     const e1 = new MyElement({
       parent: group,
     });
     const e2 = new MyElement({
       parent: group,
     });
-    group.children.push(e1);
-    group.children.push(e2);
-    expect(group.children.indexOf(element)).eqls(0);
+    group.add(e1);
+    group.add(e2);
+    expect(group.getChildren().indexOf(element)).eqls(0);
     element.toFront();
-    expect(group.children.indexOf(element)).eqls(2);
+    expect(group.getChildren().indexOf(element)).eqls(2);
   });
 
   it('to back', () => {
     element.toBack();
-    expect(group.children.indexOf(element)).eqls(0);
+    expect(group.getChildren().indexOf(element)).eqls(0);
   });
 
   it('remove', () => {
-    const e1 = group.children[1];
+    const e1 = group.getChildren()[1];
     // 移除而不销毁
     e1.remove(false);
-    expect(group.children.indexOf(e1)).eqls(-1);
+    expect(group.getChildren().indexOf(e1)).eqls(-1);
     expect(e1.destroyed).eqls(false);
-    const e2 = group.children[1];
+    const e2 = group.getChildren()[1];
     e2.remove();
     expect(e2.destroyed).eqls(true);
   });
