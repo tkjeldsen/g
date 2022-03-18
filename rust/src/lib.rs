@@ -66,3 +66,43 @@ pub fn glsl_compile(source: &str, stage: &str, validation_enabled: bool) -> Stri
         }
     }
 }
+
+#[wasm_bindgen]
+pub fn spv_compile(source: &[u8], validation_enabled: bool) -> String {
+
+    let prefix : Option<String> = Some("".to_string());
+    let options = naga::front::spv::Options {
+                adjust_coordinate_space: false,
+                strict_capabilities: false,
+                block_ctx_dump_prefix: prefix.map(std::path::PathBuf::from)
+    };
+    let result = naga::front::spv::parse_u8_slice(&source, &options);
+    let module = result.unwrap();
+
+
+    let validation_flags = if validation_enabled {
+        naga::valid::ValidationFlags::all()
+    } else {
+        naga::valid::ValidationFlags::empty()
+    };
+    let info = match naga::valid::Validator::new(validation_flags, naga::valid::Capabilities::all())
+        .validate(&module)
+    {
+        Ok(v) => v,
+        Err(e) => {
+            show_error(&"validator", e);
+            panic!();
+        }
+    };
+
+    use naga::back::wgsl;
+
+    let flags = wgsl::WriterFlags::empty();
+    match wgsl::write_string(&module, &info, flags) {
+        Ok(v) => v,
+        Err(e) => {
+            show_error(&"wgsl::write_string", e);
+            panic!();
+        }
+    }
+}
