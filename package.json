@@ -13,7 +13,7 @@
     "build": "father build && lerna run umd",
     "umd": "lerna run umd",
     "limit-size": "limit-size",
-    "wasm": "wasm-pack build ./rust --target web",
+    "wasm": "wasm-pack build ./rust --target bundler",
     "watch": "father build -w",
     "test": "jest packages/g/",
     "test-watch": "DEBUG=1 jest packages/g/ -w",
